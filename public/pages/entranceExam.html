@@ -26,7 +26,7 @@
         {
             let elem = document.createElement("script");
             elem.type = 'module';
-            elem.src = directoryPath + fileName;// + '?' + Math.random(1, 1000);
+            elem.src = directoryPath + fileName + '?' + Math.random(1, 1000);
             document.body.appendChild(elem);
         }
         arr.forEach(element => {
@@ -44,9 +44,6 @@
         <div class="margin-top-2 text-center">
             <h1 class="text-4 text-color-teal">Екзаменаційні завдання минулих років</h1>
         </div>
-        <!-- <div class="margin-top exams">
-            <h3 class="text-2 text-color-teal">Завантаж собі </h1>
-        </div> -->
         <div class="row margin-top-1 row-ext w-100 button">
             <div class="col-lg-2 col-md-5 col-sm-12 exams" data-index='5'>
                 <h3 class="text-4 text-color-teal">5 клас</h3>

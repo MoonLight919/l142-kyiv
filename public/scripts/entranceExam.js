@@ -1,7 +1,7 @@
 import {receiveFile} from './common.js';;
 
 $(function(){
-    $('.list-item').click(function (e) {
+    $('.exams').click(function (e) {
         receiveFile('entranceExam', e);
     });
 });
