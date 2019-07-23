@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ліцей №142 | PAGENAME</title>
+    <title>Ліцей №142 | Контакти</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" media="screen" href="../css/style/common.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="../css/style/PAGECSS" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/style/contacts.css" />
     <link rel="stylesheet" type="text/css" href="../css/fonts.css">
     <link rel="stylesheet" type="text/css" href="../css/mediaQueries/common.css">
-    <link rel="stylesheet" type="text/css" href="../css/mediaQueries/PAGECSSFORMQ.css">
+    <link rel="stylesheet" type="text/css" href="../css/mediaQueries/contacts.css">
     <link rel="import" href="../uploadableContent/footer.html">
     <link rel="import" href="../uploadableContent/frame.html">
     <link rel="import" href="../uploadableContent/header.html">
@@ -20,12 +20,12 @@
     <script src="https://cdnjs.cloudflare.com/divjax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous" defer></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous" defer></script>
     <script type="text/javascript">
-        let arr = ["common.js", "PAGESCRIPT.js",];
+        let arr = ["common.js", "contacts.js",];
         let directoryPath = '../scripts/';
         function downloadJSAtOnload(fileName) 
         {
             let elem = document.createElement("script");
-            
+            elem.type = 'module';
             elem.src = directoryPath + fileName + '?' + Math.random(1, 1000);
             document.body.appendChild(elem);
         }
