@@ -21,10 +21,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 //db.createNewsRowsCount();
-//db.dropNewsTable();
+db.dropNewsTable();
 //db.createNewsTable();
-//console.log('done');
+console.log('done');
 
-schedule.startSchedule();
+//schedule.startSchedule();
 
 module.exports = app;

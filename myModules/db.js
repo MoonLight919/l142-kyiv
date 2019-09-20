@@ -39,7 +39,8 @@ exports.dropNewsTable = function()
 }
 exports.createAdditionalTable = function()
 { 
-    client.query(`CREATE TABLE Additional(
+    client.query(`CREATE TABLE Additional
+        WITH ENCODING 'UTF8'(
         id BIGSERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         value TEXT NOT NULL
@@ -53,7 +54,8 @@ exports.createAdditionalTable = function()
 }
 exports.checkConnection = function()
 { 
-    client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+    client.query(`SELECT table_schema,table_name 
+                  FROM information_schema.tables;`, (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));
@@ -63,7 +65,13 @@ exports.checkConnection = function()
 }
 exports.insertNews = function(title, published, contentId, photoId)
 { 
-    client.query(`INSERT INTO News (title, published, contentId, photoId) VALUES ('${title}', '${published}', '${contentId}', '${photoId}')`, (err, res) => {
+    client.query(`INSERT INTO News (title, published, contentId, photoId) 
+                  VALUES (
+                    '${title}', 
+                    '${published}', 
+                    '${contentId}', 
+                    '${photoId}
+      ')`, (err, res) => {
     if (err) {
       console.log(err);
       
@@ -74,7 +82,9 @@ exports.insertNews = function(title, published, contentId, photoId)
     }
     client.end();
   });
-  client.query(`UPDATE Additional SET value = value + 1 WHERE name like 'NewsRowsCount'`, (err, res) => {
+  client.query(`UPDATE Additional 
+                SET value = value + 1 
+                WHERE name like 'NewsRowsCount'`, (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));
@@ -84,7 +94,8 @@ exports.insertNews = function(title, published, contentId, photoId)
 }
 exports.createNewsRowsCount = function()
 { 
-    client.query(`INSERT INTO Additional (name, value) VALUES ('NewsRowsCount', 0)`, (err, res) => {
+    client.query(`INSERT INTO Additional (name, value) 
+                  VALUES ('NewsRowsCount', 0)`, (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));
@@ -95,17 +106,16 @@ exports.createNewsRowsCount = function()
 exports.getNews = function(page, amount)
 {
   let result = [];
-  client.query(`SELECT * FROM Additional WHERE name like 'NewsRowsCount'`, (err, res) => {
+  client.query(`SELECT *
+                FROM News 
+                WHERE id > 
+                (SELECT TOP 1 value 
+                FROM Additional 
+                WHERE name like 'NewsRowsCount') - ${amount * page}`, (err, res) => {
     if (err) throw err;
-    let count = JSON.stringify(res.rows[0]).value;
-    let border = count - amount * page;
-    client.query(`SELECT * FROM News WHERE id > ${border}`, (err, res) => {
-      if (err) throw err;
-      for (let row of res.rows) {
-        result.push(JSON.stringify(row));
-      }
-      client.end();
-    });
+    for (let row of res.rows) {
+      result.push(JSON.stringify(row));
+    }
     client.end();
   });
   return result;
