@@ -115,6 +115,12 @@ h4{
     transition-duration: 1s;
     transition-timing-function: ease;
 }
+#menuButtonInner:hover,
+#menuButtonOuter:hover,
+#menuAngleClose:hover,
+#menuAngleOpen:hover{
+    cursor: pointer;
+}
 /*#endregion#*/
 /*#region Menu styles*/
 #leftMenuSide{
@@ -126,6 +132,17 @@ h4{
     z-index: 200;
     background: url('../../images/park-kpi-03.jpg') 100% 100% no-repeat;
     background-size: cover;
+    color: teal;
+}
+#leftMenuSide a{
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    color: teal;
+    text-align: center;
+}
+#leftMenuSide a:hover{
+    background-color: rgba(255, 255, 255, 1);
+    
 }
 #rightMenuSide{
     position: fixed;
@@ -371,4 +388,10 @@ iframe{
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+#section-header{
+    margin-top: 100px;
+}
+.myborder{
+    border: 3px dotted royalblue;
 }
