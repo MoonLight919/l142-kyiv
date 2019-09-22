@@ -7,7 +7,6 @@
     "test": "mocha Tests --require babel-core/register"
   },
   "dependencies": {
-    "babel": "^6.23.0",
     "body-parser": "^1.19.0",
     "cloudconvert": "^1.1.2",
     "cookie-parser": "~1.4.4",
@@ -21,9 +20,5 @@
     "node-schedule": "^1.3.2",
     "pg": "^7.12.1",
     "zlib": "^1.0.5"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-es2015": "^6.24.1"
   }
 }

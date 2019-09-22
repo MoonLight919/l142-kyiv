@@ -6,7 +6,7 @@ let db = require('./db');
 let monthConverter = require('./monthConverter');
 
 exports.startSchedule = function() {
-  var job = schedule.scheduleJob('15 23 * * *', function(){
+  var job = schedule.scheduleJob('47 23 * * *', function(){
     /**
     If you want to get the list of children, you must use a query string, in the form of
     "'IDofYourFolder in' parents" where "in parents" indicates that Drive should look into IDofYouFolder
@@ -186,7 +186,9 @@ exports.startSchedule = function() {
           }
           else if(parts[1] == 'txt'){
             console.log('Title recieved');
-            partsOfNews["title"] = fs.readFileSync('./data/news_drive/' + fileid + '.txt');
+            partsOfNews["title"] = fs.readFileSync('./data/news_drive/' + fileid + '.txt', 'utf8');
+            console.log(partsOfNews["title"]);
+            
           }
           if(lastOne && !partsOfNews.includes(null))
           {

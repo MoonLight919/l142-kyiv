@@ -13,7 +13,8 @@ client.connect();
 
 exports.createNewsTable = function()
 { 
-    client.query(`CREATE TABLE News(
+    client.query(`CREATE TABLE News
+        (
         id BIGSERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         published DATE NOT NULL,
@@ -37,10 +38,40 @@ exports.dropNewsTable = function()
     client.end();
   });
 }
+exports.dropAdditionalTable = function()
+{ 
+    client.query(`DROP TABLE Additional`, (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+      console.log(JSON.stringify(row));
+    }
+    client.end();
+  });
+}
+exports.changeEncoding = function()
+{ 
+    client.query(`SET CLIENT_ENCODING TO 'UTF8';`, (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+      console.log(JSON.stringify(row));
+    }
+    client.end();
+  });
+}
+exports.showEncoding = function()
+{ 
+    client.query(`SHOW client_encoding;`, (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+      console.log(JSON.stringify(row));
+    }
+    client.end();
+  });
+}
 exports.createAdditionalTable = function()
 { 
     client.query(`CREATE TABLE Additional
-        WITH ENCODING 'UTF8'(
+        (
         id BIGSERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         value TEXT NOT NULL
@@ -65,29 +96,20 @@ exports.checkConnection = function()
 }
 exports.insertNews = function(title, published, contentId, photoId)
 { 
-    client.query(`INSERT INTO News (title, published, contentId, photoId) 
-                  VALUES (
-                    '${title}', 
-                    '${published}', 
-                    '${contentId}', 
-                    '${photoId}
-      ')`, (err, res) => {
+  client.query(`INSERT INTO News (title, published, contentId, photoId) 
+                VALUES (
+                  '${title}', 
+                  '${published}', 
+                  '${contentId}', 
+                  '${photoId}
+    '); 
+    UPDATE Additional 
+    SET value = value::int + 1 
+    WHERE name like 'NewsRowsCount'`, (err, res) => {
     if (err) {
       console.log(err);
       
     throw err;
-    }
-    for (let row of res.rows) {
-      console.log(JSON.stringify(row));
-    }
-    client.end();
-  });
-  client.query(`UPDATE Additional 
-                SET value = value + 1 
-                WHERE name like 'NewsRowsCount'`, (err, res) => {
-    if (err) throw err;
-    for (let row of res.rows) {
-      console.log(JSON.stringify(row));
     }
     client.end();
   });
