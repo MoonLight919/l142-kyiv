@@ -4,9 +4,10 @@ const {google} = require('googleapis');
 var schedule = require('node-schedule');
 let db = require('./db');
 let monthConverter = require('./monthConverter');
+var iconv = require('iconv-lite');
 
 exports.startSchedule = function() {
-  var job = schedule.scheduleJob('47 23 * * *', function(){
+  var job = schedule.scheduleJob('45 23 * * *', function(){
     /**
     If you want to get the list of children, you must use a query string, in the form of
     "'IDofYourFolder in' parents" where "in parents" indicates that Drive should look into IDofYouFolder
@@ -57,8 +58,9 @@ exports.startSchedule = function() {
     ];
     // If modifying these scopes, delete token.json.
     const SCOPES = [
-      'https://www.googleapis.com/auth/drive.readonly',
-      'https://www.googleapis.com/auth/drive.metadata.readonly'
+      // 'https://www.googleapis.com/auth/drive.readonly',
+      // 'https://www.googleapis.com/auth/drive.metadata.readonly'
+      'https://www.googleapis.com/auth/drive'
     ];
     // The file token.json stores the user's access and refresh tokens, and is
     // created automatically when the authorization flow completes for the first
@@ -148,15 +150,15 @@ exports.startSchedule = function() {
               downloadFile(files[index].id, files[index].name, auth, arr, true);
             else
               downloadFile(files[index].id, files[index].name, auth, arr, false);
-            // drive.files.delete({
-            //     fileId: file.id
-            // }, function(err, resp){
-            //     if (err) {
-            //         console.log('Error code:', err.code)
-            //     } else {
-            //         console.log('Successfully deleted', file);
-            //     }
-            // });
+            drive.files.delete({
+                fileId: files[index].id
+            }, function(err, resp){
+                if (err) {
+                    console.log('Error code:', err.code)
+                } else {
+                    console.log('Successfully deleted', file);
+                }
+            });
           }
         } else {
           console.log('No files found.');
@@ -167,11 +169,11 @@ exports.startSchedule = function() {
     function downloadFile(fileid, filename, auth, partsOfNews, lastOne) {
       const drive = google.drive({version: 'v3', auth});
       let parts = filename.split('.');
-      var dest = fs.createWriteStream(
-        './data/news_drive/' + fileid + '.' +  parts[1]
-      );
+      let path = './data/news_drive/' + fileid + '.' +  parts[1];
+      var dest = fs.createWriteStream(path.toString(), {encoding: 'utf8'});
       drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
       function(err, res){
+        //res.data = iconv.decode(res.data, 'utf8');
         res.data.on('end', () => {
           let parts = filename.split('.');
           if(docs.includes(parts[1])){
@@ -186,9 +188,9 @@ exports.startSchedule = function() {
           }
           else if(parts[1] == 'txt'){
             console.log('Title recieved');
-            partsOfNews["title"] = fs.readFileSync('./data/news_drive/' + fileid + '.txt', 'utf8');
+            partsOfNews["title"] = fs.readFileSync('./data/news_drive/' + fileid + '.txt');
+            partsOfNews["title"] = iconv.encode(iconv.decode(partsOfNews["title"], "cp1251"), "utf8").toString();
             console.log(partsOfNews["title"]);
-            
           }
           if(lastOne && !partsOfNews.includes(null))
           {

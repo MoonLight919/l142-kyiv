@@ -28,9 +28,9 @@ exports.createNewsTable = function()
     client.end();
   });
 }
-exports.dropNewsTable = function()
+exports.dropTable = function(name)
 { 
-    client.query(`DROP TABLE News`, (err, res) => {
+    client.query(`DROP TABLE ${name}`, (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));
@@ -38,9 +38,9 @@ exports.dropNewsTable = function()
     client.end();
   });
 }
-exports.dropAdditionalTable = function()
+exports.truncateTable = function(name)
 { 
-    client.query(`DROP TABLE Additional`, (err, res) => {
+    client.query(`TRUNCATE ${name} RESTART IDENTITY;`, (err, res) => {
     if (err) throw err;
     for (let row of res.rows) {
       console.log(JSON.stringify(row));

@@ -21,9 +21,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 //db.createNewsRowsCount();
-//db.dropNewsTable();
-//db.createNewsTable();
-//db.showEncoding();
 //console.log('done');
 
 schedule.startSchedule();
