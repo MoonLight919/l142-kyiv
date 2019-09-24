@@ -23,6 +23,6 @@ app.use('/', indexRouter);
 //db.createNewsRowsCount();
 //console.log('done');
 
-schedule.startSchedule();
+//schedule.startSchedule();
 
 module.exports = app;

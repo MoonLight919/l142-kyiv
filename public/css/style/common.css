@@ -134,13 +134,13 @@ h4{
     background-size: cover;
     color: teal;
 }
-#leftMenuSide a{
+#leftMenuSide a, #rightMenuSide a{
     background-color: rgba(255, 255, 255, 0.5);
     padding: 20px;
     color: teal;
     text-align: center;
 }
-#leftMenuSide a:hover{
+#leftMenuSide a:hover, #rightMenuSide a:hover{
     background-color: rgba(255, 255, 255, 1);
     
 }

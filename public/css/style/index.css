@@ -59,7 +59,7 @@
 #cont>div{
     border: 3px dotted royalblue;
 }
-#item1{
+/* #item1{
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 1;
@@ -118,7 +118,7 @@
     grid-column-end: 9;
     grid-row-start: 5;
     grid-row-end: 7;
-}
+} */
 .achievements{
     flex-grow: 1;
     display: flex;

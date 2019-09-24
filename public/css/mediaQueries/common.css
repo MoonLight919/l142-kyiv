@@ -1,5 +1,11 @@
 @media (min-width: 1px)
 {
+    #leftMenuSide .menu-resized{
+        display: none;
+    }
+    #rightMenuSide .menu-resized{
+        display: block;
+    }
     #logo-text{
         margin-left: 10px;
     }
@@ -179,6 +185,12 @@
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) 
 {
+    #leftMenuSide .menu-resized{
+        display: block;
+    }
+    #rightMenuSide .menu-resized{
+        display: none;
+    }
     section{
         background: green;
     }

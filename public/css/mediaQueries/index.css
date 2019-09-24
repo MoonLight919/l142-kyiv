@@ -121,55 +121,65 @@
         padding-bottom: 10px;
     }
     #item1{
-        grid-column-start: 1;
-        grid-column-end: 3;
-        grid-row-start: 1;
-        grid-row-end: 3;
-    }
-    #item2{
-        grid-column-start: 3;
-        grid-column-end: 7;
-        grid-row-start: 1;
-        grid-row-end: 3;
-    }
-    #item3{
-        grid-column-start: 7;
-        grid-column-end: 9;
-        grid-row-start: 1;
-        grid-row-end: 3;
-    }
-    #item4{
-        grid-column-start: 1;
-        grid-column-end: 3;
-        grid-row-start: 3;
-        grid-row-end: 5;
-    }
-    #item5{
-        grid-column-start: 3;
-        grid-column-end: 5;
-        grid-row-start: 3;
-        grid-row-end: 5;
-    }
-    #item6{
-        grid-column-start: 5;
-        grid-column-end: 9;
-        grid-row-start: 3;
-        grid-row-end: 5;
-    }
-    #item7{
-        /* grid-column-start: 1;
-        grid-column-end: 7;
-        grid-row-start: 5;
-        grid-row-end: 7; */
-        display: flex;
-    }
-    #item8{
-        /* grid-column-start: 7;
-        grid-column-end: 9;
-        grid-row-start: 5;
-        grid-row-end: 7; */
-        display: flex;
-    }
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    border-bottom: none !important;
+}
+#item2{
+    border-left: none !important;
+    border-right: none !important;
+    grid-column-start: 3;
+    grid-column-end: 7;
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+#item3{
+    grid-column-start: 7;
+    grid-column-end: 9;
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+#item4{
+    border-top: none !important;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 5;
+}
+#item5{
+    border-left: none !important;
+    border-top: none !important;
+    grid-column-start: 3;
+    grid-column-end: 5;
+    grid-row-start: 3;
+    grid-row-end: 5;
+    color: #212529;
+}
+#item6{
+    border-top: none !important;
+    border-left: none !important;
+    grid-column-start: 5;
+    grid-column-end: 9;
+    grid-row-start: 3;
+    grid-row-end: 5;
+}
+#item7{
+    border-top: none !important;
+    grid-column-start: 1;
+    grid-column-end: 7;
+    grid-row-start: 5;
+    grid-row-end: 7;
+}
+#item8{
+    border-top: none !important;
+    border-left: none !important;
+    grid-column-start: 7;
+    grid-column-end: 9;
+    grid-row-start: 5;
+    grid-row-end: 7;
+}
 }
 
  /* Large devices (desktops, 992px and up) */
