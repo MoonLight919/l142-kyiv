@@ -5,8 +5,10 @@ $(function(){
         let oldw, oldh, oldl, oldt, firstTime;
         $('.flip-card').click( function(){
             firstTime = true;
-            let w = $(this).attr('data-w');
-            let h = $(this).attr('data-h');
+            // let w = $(this).attr('data-w');
+            // let h = $(this).attr('data-h');
+            let w =  $(window).width() * 0.6;
+            let h =  $(window).height() * 0.6;
             oldw = $(this).width();
             oldh = $(this).height();
             let left = $(window).width() / 2 - w / 2;
@@ -63,6 +65,15 @@ $(function(){
                 let diffx = oldl - pos.left;
                 let diffy = oldt - pos.top;
                 // $(obj).offset({top : window.pageYOffset + pos.top, left : pos.left});
+                
+                // let tabelWidth = $('#cont').width();
+                // let tabelheight = $('#cont').height();
+                // let newW, newH;
+                // if(window.innerWidth <= 820){
+                //     newW = tabelWidth * 0.5;
+                //     newH = tabelheight * 0.25;
+                // }
+
                 $(obj).animate({
                     'width' : oldw,
                     'height' : oldh,
@@ -124,16 +135,16 @@ $(function(){
         function onWindowResize() {
             let size1, size2, cnt;
             if(window.innerWidth <= 1200){
-            if(window.innerWidth >= 768){
-                    size1 = "offset-sm-2 col-sm-3";
-                    size2 = "offset-sm-2 col-sm-3";
-                    cnt = 2;
-            }
-            else{
-                    size1 = "offset-sm-3 col-sm-6";
-                    //size2 = "offset-sm-1 col-sm-2";
-                    cnt = 1;
-            }
+                if(window.innerWidth >= 768){
+                        size1 = "offset-sm-2 col-sm-3";
+                        size2 = "offset-sm-2 col-sm-3";
+                        cnt = 2;
+                }
+                else{
+                        size1 = "offset-sm-3 col-sm-6";
+                        //size2 = "offset-sm-1 col-sm-2";
+                        cnt = 1;
+                }
             }
             else{
                 size1 = "offset-sm-2 col-sm-2";
