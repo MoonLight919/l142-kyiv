@@ -1,18 +1,16 @@
 $(function(){
     // setTimeout(function()
     // {        
-        //open card
-        let oldw, oldh, oldl, oldt, firstTime;
-        $('.flip-card').click( function(){
+        let oldw, oldh, oldl, oldt, firstTime, clone;
+        function openCard(){
             firstTime = true;
-            // let w = $(this).attr('data-w');
-            // let h = $(this).attr('data-h');
             let w =  $(window).width() * 0.6;
             let h =  $(window).height() * 0.6;
             oldw = $(this).width();
             oldh = $(this).height();
             let left = $(window).width() / 2 - w / 2;
             let top = $(window).height() / 2 - h / 2;
+            clone = $(this).clone(true, true);
             $($(this).children()[0]).css('transform', 'rotateY(180deg)');
             $($(this).children()[1]).css({
                 'transform': 'rotateY(0deg)',
@@ -46,8 +44,8 @@ $(function(){
                 $('section').on('click', ccth);
                 $(this).addClass('opened-card');
             });
-            
-        });
+        }
+        $('.flip-card').click(openCard);
 
         //close card
         function closeCardTempHandler(e) {
@@ -58,78 +56,24 @@ $(function(){
                     'transform': 'rotateY(180deg)',
                     'z-index' : '0'
                 });
-                let pos = $(obj).offset();
-                $(obj).css({
-                    'position' : 'relative',
-                });
-                let diffx = oldl - pos.left;
-                let diffy = oldt - pos.top;
-                // $(obj).offset({top : window.pageYOffset + pos.top, left : pos.left});
-                
-                // let tabelWidth = $('#cont').width();
-                // let tabelheight = $('#cont').height();
-                // let newW, newH;
-                // if(window.innerWidth <= 820){
-                //     newW = tabelWidth * 0.5;
-                //     newH = tabelheight * 0.25;
-                // }
-
                 $(obj).animate({
                     'width' : oldw,
                     'height' : oldh,
-                    'top' : '0',
-                    'left' : '0',
                 }, 1000);
+                $(obj).offset({top : oldt, left : oldl}); // option1
                 $(obj).promise().then(function() {
                     $(obj).css({
                         'box-shadow': 'none',
                     });
+                    //$(obj).offset({top : oldt, left : oldl}); // option2
+                    setTimeout(() => {
+                        $(obj).replaceWith(clone);
+                    }, 400);
                 });
-                $(obj).removeClass('opened-card');
                 let ccth = closeCardTempHandler;
                 $('section').off('click', ccth);
             }
         }
-
-
-        //close card
-        // $('section').click(function(e){
-        //     if($(e.target).parents('.opened-card').length == 0 && firstTime == false)
-        //     {
-        //         firstTime = true;
-        //         let obj = $('.opened-card');
-        //         $($(obj).children()[0]).css('transform', 'rotateY(0deg)');
-        //         $($(obj).children()[1]).css({
-        //             'transform': 'rotateY(180deg)',
-        //             'z-index' : '0'
-        //         });
-        //         let pos = $(obj).offset();
-        //         //console.log('pos: ' + pos);
-        //         console.log('pos: ' + pos);
-                
-        //         $(obj).css({
-        //             'position' : 'relative',
-        //         });
-        //         let diffx = oldl - pos.left;
-        //         let diffy = oldt - pos.top;
-        //         // $(obj).offset({top : window.pageYOffset + pos.top, left : pos.left});
-        //         $(obj).animate({
-        //             'width' : oldw,
-        //             'height' : oldh,
-        //             'top' : '0',
-        //             'left' : '0',
-        //         }, 1000);
-        //         $(obj).promise().then(function() {
-        //             $(obj).css({
-        //                 'box-shadow': 'none',
-        //             });
-        //         });
-        //         $(obj).removeClass('opened-card');
-        //     }
-        //     else
-        //         firstTime = false;
-        // });
-
         //construct carousel
         let oldWindowWidth = window.innerWidth; 
         function onWindowResize() {
@@ -181,7 +125,7 @@ $(function(){
                 //console.dir(row);
                 i += cnt;
             }
-        oldWindowWidth = window.innerWidth; 
+            oldWindowWidth = window.innerWidth; 
         };
         $(window).resize(onWindowResize);
         onWindowResize();
