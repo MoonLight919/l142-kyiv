@@ -1,16 +1,21 @@
 $(function(){
     // setTimeout(function()
     // {        
-        let oldw, oldh, oldl, oldt, firstTime, clone;
+        let oldw, oldh, oldl, oldt, alreadyOpened, clones = [];
         function openCard(){
-            firstTime = true;
+            if(alreadyOpened)
+            {
+                var e = jQuery.Event( "click" );
+                closeCardTempHandler(e);
+            }
+            alreadyOpened = true;
             let w =  $(window).width() * 0.6;
             let h =  $(window).height() * 0.6;
             oldw = $(this).width();
             oldh = $(this).height();
             let left = $(window).width() / 2 - w / 2;
             let top = $(window).height() / 2 - h / 2;
-            clone = $(this).clone(true, true);
+            clones.push($(this).clone(true, true));
             $($(this).children()[0]).css('transform', 'rotateY(180deg)');
             $($(this).children()[1]).css({
                 'transform': 'rotateY(0deg)',
@@ -49,6 +54,7 @@ $(function(){
 
         //close card
         function closeCardTempHandler(e) {
+            alreadyOpened = false;
             let obj = $('.opened-card')[0];
             if(e.currentTarget != obj){
                 $($(obj).children()[0]).css('transform', 'rotateY(0deg)');
@@ -67,7 +73,7 @@ $(function(){
                     });
                     //$(obj).offset({top : oldt, left : oldl}); // option2
                     setTimeout(() => {
-                        $(obj).replaceWith(clone);
+                        $(obj).replaceWith(clones.shift());
                     }, 400);
                 });
                 let ccth = closeCardTempHandler;
@@ -122,7 +128,6 @@ $(function(){
                 }
                 $(row).append(elemOuter);
                 $(parent).append(row);
-                //console.dir(row);
                 i += cnt;
             }
             oldWindowWidth = window.innerWidth; 

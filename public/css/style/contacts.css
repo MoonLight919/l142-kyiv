@@ -7,3 +7,9 @@
 #map-item iframe{
     height: 50vh;
 }
+#map-item{
+    border-bottom: none;
+}
+body{
+    background-color: whitesmoke !important;
+}
