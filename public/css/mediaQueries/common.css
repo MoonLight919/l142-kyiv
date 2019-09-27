@@ -131,9 +131,9 @@
     #footer-links-top div:nth-child(1){
         margin-top: 0;
     }
-    section{
+    /* section{
         background: red;
-    }
+    } */
     .margin-right-for-search{
         margin-right: 20px;
     }
@@ -168,9 +168,9 @@
 
 @media (min-width: 720px) 
 {
-	section{
+	/* section{
 		background: aqua;
-    }
+    } */
     .margin-right-for-search{
         margin-right: 35px;
     }
@@ -191,9 +191,9 @@
     #rightMenuSide .menu-resized{
         display: none;
     }
-    section{
+    /* section{
         background: green;
-    }
+    } */
     #leftMenuSide{
         top: 0;
         left: calc(-40%);
@@ -227,9 +227,9 @@
  /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) 
 {
-    section{
+    /* section{
         background: blue;
-    }
+    } */
     .margin-right-for-search{
         margin-right: 40px;
     }
@@ -273,9 +273,9 @@
  /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) 
 {
-    section{
+    /* section{
         background: purple;
-    }
+    } */
     #top .searchInput{
         font-size: 25px;
     }
