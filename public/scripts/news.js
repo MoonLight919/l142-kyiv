@@ -21,15 +21,13 @@ $(function(){
             arr['date_block'] = $('<div/>', {
                 "class" : 'background-color-teal text-color-white date-block text-center'
             });
-            let parts = element.published.split('.');
-            let resDate = parts[2] + ' ' + part[1] + ' ' + part[3];
-            $(arr['date_block']).text(resDate);
+            $(arr['date_block']).text(element.published);
             arr['ref'] = $('<a/>', {
                 "class" : 'item flex-grow-1 w-100 justify-content-around',
-                "href" : 'news/' + element.contentId
+                "href" : 'news/' + element.id
             });
             arr['picture'] = $('<img/>', {
-                "src" : element.photoId
+                "src" : element.imageSrc
             });
             arr['title'] = $('<p/>');
             arr['title'].text(element.title);
@@ -39,6 +37,6 @@ $(function(){
             $(arr['news_item']).append(arr['ref']);
             $('#upload').append(arr['news_item']);
         });
-    }   
-    loadNews();
+    }
+    loadNews(0, 10);   
 })

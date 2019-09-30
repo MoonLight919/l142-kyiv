@@ -9,10 +9,6 @@
         align-items: center;
         justify-content: center;
     }
-    #map-item{
-        border-top: none;
-        margin-top: 0;
-    }
 }
 @media (min-width: 370px) 
 {
@@ -39,9 +35,6 @@
     .myborder #phones{
         align-items: flex-start;
         border-top: none;
-    }
-    #map-item{
-        border-top: 3px dotted royalblue; 
     }
 }
 

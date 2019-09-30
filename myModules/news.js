@@ -7,7 +7,7 @@ let monthConverter = require('./monthConverter');
 var iconv = require('iconv-lite');
 
 exports.startSchedule = function() {
-  var job = schedule.scheduleJob('45 23 * * *', function(){
+  var job = schedule.scheduleJob('20 20 * * *', function(){
     /**
     If you want to get the list of children, you must use a query string, in the form of
     "'IDofYourFolder in' parents" where "in parents" indicates that Drive should look into IDofYouFolder
@@ -59,7 +59,7 @@ exports.startSchedule = function() {
     // If modifying these scopes, delete token.json.
     const SCOPES = [
       // 'https://www.googleapis.com/auth/drive.readonly',
-      // 'https://www.googleapis.com/auth/drive.metadata.readonly'
+      'https://www.googleapis.com/auth/drive.metadata.readonly',
       'https://www.googleapis.com/auth/drive'
     ];
     // The file token.json stores the user's access and refresh tokens, and is
@@ -144,21 +144,12 @@ exports.startSchedule = function() {
         if (files.length) {
           console.log('Files:');
           let arr = [];
+          let lastOne;
           for (let index = 0; index < files.length; index++) {
             console.log(`${files[index].name} (${files[index].id})`);
-            if(index == files.length - 1)
-              downloadFile(files[index].id, files[index].name, auth, arr, true);
-            else
-              downloadFile(files[index].id, files[index].name, auth, arr, false);
-            drive.files.delete({
-                fileId: files[index].id
-            }, function(err, resp){
-                if (err) {
-                    console.log('Error code:', err.code)
-                } else {
-                    console.log('Successfully deleted', file);
-                }
-            });
+            lastOne = (index == files.length - 1);
+            let deleteFunction = deleteFile.bind(null, files[index].id, drive);
+            downloadFile(files[index].id, files[index].name, drive, arr, lastOne, deleteFunction);
           }
         } else {
           console.log('No files found.');
@@ -166,24 +157,22 @@ exports.startSchedule = function() {
       });
     }
 
-    function downloadFile(fileid, filename, auth, partsOfNews, lastOne) {
-      const drive = google.drive({version: 'v3', auth});
+    function downloadFile(fileid, filename, drive, partsOfNews, lastOne, deleteFunction) {
       let parts = filename.split('.');
       let path = './data/news_drive/' + fileid + '.' +  parts[1];
       var dest = fs.createWriteStream(path.toString(), {encoding: 'utf8'});
       drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
       function(err, res){
-        //res.data = iconv.decode(res.data, 'utf8');
         res.data.on('end', () => {
           let parts = filename.split('.');
           if(docs.includes(parts[1])){
-            partsOfNews["contentId"] = fileid;
+            partsOfNews["contentName"] = fileid;
             console.log('Content recieved');
             console.log('Sent to converter');
             sendToConverter(fileid + '.' +  parts[1]);
           }
           else if(images.includes(parts[1])){
-            partsOfNews["photoId"] = fileid;
+            partsOfNews["imageFile"] = fileid + '.' +  parts[1];
             console.log('Photo recieved');
           }
           else if(parts[1] == 'txt'){
@@ -198,14 +187,15 @@ exports.startSchedule = function() {
             let year = currentDate.getFullYear().toString();
             let month = currentDate.getMonth().toString();
             let day = currentDate.getDate().toString();
-            let published = year + '-' + monthConverter.getUA(month) + '-' + day;
-            db.insertNews(partsOfNews["title"], published, partsOfNews["contentId"], partsOfNews["photoId"]);
+            let published = year + '-' + month + '-' + day;
+            db.insertNews(partsOfNews["title"], published, partsOfNews["contentName"], partsOfNews["imageFile"]);
           }
           console.log('Done');
         })
         .on('error', err => {
           console.log('Error', err);
         })
+        .on('end', deleteFunction)
         .pipe(dest);
       })
     }
@@ -241,42 +231,14 @@ exports.startSchedule = function() {
     }
   });
 }
-
-
-function deleteFiles(oauth2Client) {
-  var drive = google.drive({
-      version: 'v3',
-      auth: oauth2Client,
+function deleteFile(fileid, drive) {
+  drive.files.delete({
+    fileId: fileid
+  }, function(err, resp){
+      if (err) {
+          console.log('Error code:', err.code)
+      } else {
+          console.log('Successfully deleted');
+      }
   });
-
-  var validFiles = fs.readdirSync(FILES_PATH).filter((file) => 
-      fs.lstatSync(path.join(FILES_PATH, file)).isFile());
-
-  if (validFiles.length == 0) {
-      console.log('There are no available files. Exiting...');
-      return;
-  }
-
-  var validFile = validFiles[0];
-
-  console.log('Reading file', validFile);
-  fs.readFile(FILES_PATH+validFile, {encoding: 'utf-8'}, function(err, data){
-    var files = data.split('\n');
-    async.eachSeries(files, function(file, callback){
-        drive.files.delete({
-            fileId: file
-        }, function(err, resp){
-            if (err) {
-                console.log('Error code:', err.code)
-            } else {
-                console.log('Successfully deleted', file);
-            }
-            callback();
-        });
-    }, function(err){
-        console.log('Deleted 1000 files');
-        fs.unlinkSync(FILES_PATH+validFile);
-        deleteFiles(oauth2Client);
-    });
-  }); 
 }

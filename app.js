@@ -7,7 +7,7 @@ var schedule = require('./myModules/news');
 var db = require('./myModules/db');
 var app = express();
 
-var indexRouter = require('./routes/index');
+var router = require('./router');
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
@@ -18,11 +18,11 @@ app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/', router);
 
 //db.createNewsRowsCount();
 //console.log('done');
 
-//schedule.startSchedule();
+schedule.startSchedule();
 
 module.exports = app;

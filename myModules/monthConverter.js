@@ -1,30 +1,34 @@
-exports.getUA = function(number) {
-    switch (number) {
-        case 1:
-            return 'Січень';
-        case 2:
-            return 'Лютий';
-        case 3:
-            return 'Березень';
-        case 4:
-            return 'Квітень';
-        case 5:
-            return 'Травень';
-        case 6:
-            return 'Червень';
-        case 7:
-            return 'Липень';
-        case 8:
-            return 'Серпень';
-        case 9:
-            return 'Вересень';
-        case 10:
-            return 'Жовтень';
-        case 11:
-            return 'Листопад';
-        case 12:
-            return 'Грудень';
-        default:
-            return -1;
+exports.numToUA = function(number) {
+    let arr = {
+        '01' : 'Січня',
+        '02' : 'Лютого',
+        '03' : 'Березня',
+        '04' : 'Квітня',
+        '05' : 'Травня',
+        '06' : 'Червня',
+        '07' : 'Липня',
+        '08' : 'Серпня',
+        '09' : 'Вересня',
+        '10' : 'Жовтеня',
+        '11' : 'Листопада',
+        '12' : 'Грудня',
     }
+    return arr[number];
+}
+exports.EngToUA = function(number) {
+    let arr = {
+        'Jan' : 'Січня',
+        'Fab' : 'Лютого',
+        'Mar' : 'Березня',
+        'Apr' : 'Квітня',
+        'May' : 'Травня',
+        'Jun' : 'Червня',
+        'Jul' : 'Липня',
+        'Aug' : 'Серпня',
+        'Sep' : 'Вересня',
+        'Oct' : 'Жовтеня',
+        'Nov' : 'Листопада',
+        'Dec' : 'Грудня',
+    }
+    return arr[number];
 }
