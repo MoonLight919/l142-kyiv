@@ -2,11 +2,11 @@ const { Client } = require('pg');
 const { Pool } = require('pg');
 
 let config = {
-  user: "cwcbppxhhgeitk",
-  password: "01d0f2bf9664a2edb8fdb4defdd098b7fe7180b9de2aee82b8fca9feaac8989f",
-  database: "db5mcm1v2fkdei",
+  user: "ijsbumypjqelez",
+  password: "d5d2b62d9829fbd3450bb70b4c5a85d32879833281e513a1b4a29e5d5502e6e7",
+  database: "deflje83a8m78p",
   port: 5432,
-  host: "ec2-46-137-113-157.eu-west-1.compute.amazonaws.com",
+  host: "ec2-23-21-115-109.compute-1.amazonaws.com",
   ssl: true
 };
 
@@ -106,6 +106,17 @@ exports.checkConnection = function()
 exports.insertNews = function(title, published, contentName, imageFile)
 { 
   client.connect();
+  console.log(`INSERT INTO News (title, published, contentName, imageFile) 
+  VALUES (
+    '${title}', 
+    '${published}', 
+    '${contentName}', 
+    '${imageFile}
+  '); 
+  UPDATE Additional 
+  SET value = value::int + 1 
+  WHERE name like 'NewsRowsCount'`);
+  
   client.query(`INSERT INTO News (title, published, contentName, imageFile) 
                 VALUES (
                   '${title}', 

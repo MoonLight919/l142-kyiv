@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var schedule = require('./myModules/news');
 var db = require('./myModules/db');
+var pathHelper = require('./myModules/pathHelper');
 var app = express();
 
 var router = require('./router');
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', router);
 
+//db.truncateTable('news');
 //db.createNewsRowsCount();
 //console.log('done');
 

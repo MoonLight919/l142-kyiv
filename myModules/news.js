@@ -3,11 +3,11 @@ const readline = require('readline');
 const {google} = require('googleapis');
 var schedule = require('node-schedule');
 let db = require('./db');
-let monthConverter = require('./monthConverter');
+let pathHelper = require('./pathHelper');
 var iconv = require('iconv-lite');
 
 exports.startSchedule = function() {
-  var job = schedule.scheduleJob('20 20 * * *', function(){
+  var job = schedule.scheduleJob('02 01 * * *', function(){
     /**
     If you want to get the list of children, you must use a query string, in the form of
     "'IDofYourFolder in' parents" where "in parents" indicates that Drive should look into IDofYouFolder
@@ -168,12 +168,14 @@ exports.startSchedule = function() {
           if(docs.includes(parts[1])){
             partsOfNews["contentName"] = fileid;
             console.log('Content recieved');
+            console.log(partsOfNews["contentName"]);
             console.log('Sent to converter');
             sendToConverter(fileid + '.' +  parts[1]);
           }
           else if(images.includes(parts[1])){
             partsOfNews["imageFile"] = fileid + '.' +  parts[1];
             console.log('Photo recieved');
+            console.log(partsOfNews["imageFile"]);
           }
           else if(parts[1] == 'txt'){
             console.log('Title recieved');
@@ -183,6 +185,10 @@ exports.startSchedule = function() {
           }
           if(lastOne && !partsOfNews.includes(null))
           {
+            console.log('So...');
+            
+            console.log(partsOfNews["contentName"]);
+            console.log(partsOfNews["imageFile"]);
             let currentDate = new Date();
             let year = currentDate.getFullYear().toString();
             let month = currentDate.getMonth().toString();
@@ -199,36 +205,6 @@ exports.startSchedule = function() {
         .pipe(dest);
       })
     }
-
-    function sendToConverter(filename) {
-      cloudconvert = new (require('cloudconvert'))('sJo6q3UWyqWZP40py0HhLt1EFuToyZuMPzdG5oMs0fLXwlUjehaq9xtsMyX1G3NJ');
-      let parts = filename.split('.');
-      fs.createReadStream( './data/news_drive/' + filename)
-      .pipe(cloudconvert.convert({
-          "inputformat": parts[1],
-          "outputformat": "html",
-          "input": "upload",
-          "converteroptions": {
-              "page_range": null,
-              "outline": null,
-              "zoom": 1.5,
-              "page_width": null,
-              "page_height": null,
-              "embed_css": true,
-              "embed_javascript": true,
-              "embed_image": true,
-              "embed_font": true,
-              "split_pages": null,
-              "space_as_offset": false,
-              "simple_html": null,
-              "bg_format": "png",
-              "input_password": null,
-              "templating": null
-          }
-      }))
-      .pipe(fs.createWriteStream('./data/news_html/' + parts[0] + '.html'));
-      //fs.unlink('./data/news_drive/' + filename);
-    }
   });
 }
 function deleteFile(fileid, drive) {
@@ -241,4 +217,34 @@ function deleteFile(fileid, drive) {
           console.log('Successfully deleted');
       }
   });
+}
+exports.sendToConverter = sendToConverter;
+function sendToConverter(filename) {
+  cloudconvert = new (require('cloudconvert'))('sJo6q3UWyqWZP40py0HhLt1EFuToyZuMPzdG5oMs0fLXwlUjehaq9xtsMyX1G3NJ');
+  let parts = filename.split('.');
+  fs.createReadStream( pathHelper.dataDirectory + 'news_drive/' + filename)
+  .pipe(cloudconvert.convert({
+      "inputformat": parts[1],
+      "outputformat": "html",
+      "input": "upload",
+      "converteroptions": {
+          "page_range": null,
+          "outline": null,
+          "zoom": 1.5,
+          "page_width": null,
+          "page_height": null,
+          "embed_css": true,
+          "embed_javascript": true,
+          "embed_image": true,
+          "embed_font": true,
+          "split_pages": false,
+          "space_as_offset": false,
+          "simple_html": null,
+          "bg_format": "png",
+          "input_password": null,
+          "templating": null
+      }
+  }))
+  .pipe(fs.createWriteStream(pathHelper.dataDirectory + 'news_html/' + parts[0] + '.html'));
+  //fs.unlink('./data/news_drive/' + filename);
 }
