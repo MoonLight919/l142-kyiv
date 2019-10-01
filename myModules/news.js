@@ -7,7 +7,7 @@ let pathHelper = require('./pathHelper');
 var iconv = require('iconv-lite');
 
 exports.startSchedule = function() {
-  var job = schedule.scheduleJob('02 01 * * *', function(){
+  var job = schedule.scheduleJob('47 23 * * *', function(){
     /**
     If you want to get the list of children, you must use a query string, in the form of
     "'IDofYourFolder in' parents" where "in parents" indicates that Drive should look into IDofYouFolder
@@ -131,37 +131,38 @@ exports.startSchedule = function() {
     * Lists the names and IDs of up to 10 files.
     * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
     */
-    function listFiles(auth) {
-      const drive = google.drive({version: 'v3', auth});
+     function listFiles(auth) {
+      global.drive = google.drive({version: 'v3', auth});
       let googleFolderId = '1bQRPD30eSIQJZXITGUg7qYnTlRhj1V-A';
-      drive.files.list({
+      global.drive.files.list({
         q: `'${googleFolderId}' in parents`,
         pageSize: 10,
         fields: 'nextPageToken, files(id, name)',
-      }, (err, res) => {
-        if (err) return console.log('The API returned an error: ' + err);
-        const files = res.data.files;
-        if (files.length) {
-          console.log('Files:');
-          let arr = [];
-          let lastOne;
-          for (let index = 0; index < files.length; index++) {
-            console.log(`${files[index].name} (${files[index].id})`);
-            lastOne = (index == files.length - 1);
-            let deleteFunction = deleteFile.bind(null, files[index].id, drive);
-            downloadFile(files[index].id, files[index].name, drive, arr, lastOne, deleteFunction);
-          }
-        } else {
-          console.log('No files found.');
+      }, listFilesHandler);
+    }
+     function listFilesHandler(err, res) {
+      if (err) return console.log('The API returned an error: ' + err);
+      const files = res.data.files;
+      if (files.length) {
+        console.log('Files:');
+        let arr = [];
+        let lastOne;
+        for (let index = 0; index < files.length; index++) {
+          console.log(`${files[index].name} (${files[index].id})`);
+          lastOne = (index == files.length - 1);
+          let deleteFunction = deleteFile.bind(null, files[index].id);
+          downloadFile(files[index].id, files[index].name, arr, lastOne, deleteFunction);
         }
-      });
+      } else {
+        console.log('No files found.');
+      }
     }
 
-    function downloadFile(fileid, filename, drive, partsOfNews, lastOne, deleteFunction) {
+     function downloadFile(fileid, filename, partsOfNews, lastOne, deleteFunction) {
       let parts = filename.split('.');
       let path = './data/news_drive/' + fileid + '.' +  parts[1];
       var dest = fs.createWriteStream(path.toString(), {encoding: 'utf8'});
-      drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
+       global.drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
       function(err, res){
         res.data.on('end', () => {
           let parts = filename.split('.');
@@ -207,8 +208,8 @@ exports.startSchedule = function() {
     }
   });
 }
-function deleteFile(fileid, drive) {
-  drive.files.delete({
+function deleteFile(fileid) {
+  global.drive.files.delete({
     fileId: fileid
   }, function(err, resp){
       if (err) {
