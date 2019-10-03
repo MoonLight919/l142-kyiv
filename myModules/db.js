@@ -1,14 +1,8 @@
 const { Client } = require('pg');
 const { Pool } = require('pg');
+const fs = require('fs');
 
-let config = {
-  user: "ijsbumypjqelez",
-  password: "d5d2b62d9829fbd3450bb70b4c5a85d32879833281e513a1b4a29e5d5502e6e7",
-  database: "deflje83a8m78p",
-  port: 5432,
-  host: "ec2-23-21-115-109.compute-1.amazonaws.com",
-  ssl: true
-};
+let config = JSON.parse(fs.readFileSync('../dbCredentials.json'));
 
 const client = new Client(config);
 const pool = new Pool(config);
