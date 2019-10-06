@@ -1,11 +1,12 @@
 const { Client } = require('pg');
 const { Pool } = require('pg');
 const fs = require('fs');
+const path = require('path');
 
-let config = JSON.parse(fs.readFileSync('../dbCredentials.json'));
+let config = JSON.parse(fs.readFileSync('dbCredentials.json'));
 
-const client = new Client(config);
-const pool = new Pool(config);
+const client = new Client(config["herokuMainDb"]);
+const pool = new Pool(config["herokuMainDb"]);
 
 exports.createNewsTable = function()
 { 

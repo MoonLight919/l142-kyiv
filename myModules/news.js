@@ -62,16 +62,20 @@ const SCOPES = [
 // time.
 const TOKEN_PATH = 'token.json';
 
-function createDrive() {
+function readCredentialsAndAuthorize() {
+  console.log('reading credentials...');
+  
   // Load client secrets from a local file.
-  fs.readFile('credentials.json', (err, content) => {
-    if (err) 
-      return console.log('Error loading client secret file:', err);
+    let credentials = fs.readFileSync('credentials.json');
 
     // Authorize a client with credentials, then call the Google Drive API.
-    authorize(JSON.parse(content), listFiles);
-  });
-
+    //return new Promise(function(resolve, reject){
+    return authorize(JSON.parse(credentials), (auth) => {
+        global.drive = google.drive({version: 'v3', auth});
+        console.log('Drive created!');
+      });
+      //resolve('Drive created!');
+  //})
 }
 
 /**
@@ -89,11 +93,15 @@ function authorize(credentials, callback) {
     );
 
   // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err)
-      return getAccessToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    callback(oAuth2Client);
+  return new Promise(function(resolve, reject){
+    fs.readFile(TOKEN_PATH, async function(err, token){
+      if (err)
+        return getAccessToken(oAuth2Client, callback);
+      oAuth2Client.setCredentials(JSON.parse(token));
+      await callback(oAuth2Client);
+      console.log('done authorize');
+      resolve('done authorize');
+    });
   });
 }
 
@@ -132,87 +140,95 @@ function getAccessToken(oAuth2Client, callback) {
 * Lists the names and IDs of up to 10 files.
 * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
 */
-function listFiles(auth) {
-  global.drive = google.drive({version: 'v3', auth});
-  let googleFolderId = '1bQRPD30eSIQJZXITGUg7qYnTlRhj1V-A';
-  global.drive.files.list({
-    q: `'${googleFolderId}' in parents`,
-    pageSize: 10,
-    fields: 'nextPageToken, files(id, name)',
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
-    const files = res.data.files;
-    if (files.length) {
-      console.log('Files:');
-      let arr = [];
-      let lastOne;
-      for (let index = 0; index < files.length; index++) {
-        console.log(`${files[index].name} (${files[index].id})`);
-        lastOne = (index == files.length - 1);
+function listFiles() {
+  let googleDriveCredentials = JSON.parse(fs.readFileSync('googleDriveCredentials.json'));
+  let keys = ['news'];
+  let processingFunctions = [processNews];
+  for (let index = 0; index < keys.length; index++) {
+    global.drive.files.list({
+      q: `'${googleDriveCredentials.folders[keys[index]]}' in parents`,
+      pageSize: 10,
+      fields: 'nextPageToken, files(id, name)',
+    }, (err, res) => {
+      if (err) return console.log('The API returned an error: ' + err);
+      const files = res.data.files;
+      if (files.length) {
+        console.log('Files:');
         let deleteFunction = deleteFile.bind(null, files[index].id);
-        downloadFile(files[index].id, files[index].name, arr, lastOne, deleteFunction);
+        for (let index = 0; index < files.length; index++) {
+          console.log(`${files[index].name} (${files[index].id})`);
+          downloadFile(files[index].id, files[index].name, deleteFunction);
+        }
+        processingFunctions[index](files);
+      } else {
+        console.log('No files found.');
       }
-    } else {
-      console.log('No files found.');
+    });
+  }
+}
+
+function processNews(files) {
+  let data = [];
+  files.forEach(element => {
+    let parts = element.name.split('.');
+    if(docs.includes(parts[1])){
+      data["contentName"] = element.id;
+      console.log('Content recieved');
     }
+    else if(images.includes(parts[1])){
+      data["imageFile"] = element.id + '.' +  parts[1];
+      console.log('Photo recieved');
+    }
+    else if(parts[1] == 'txt'){
+      console.log('Title recieved');
+      data["title"] = fs.readFileSync(pathHelper.dataDirectory + 'news_drive/' + element.id + '.txt');
+      data["title"] = iconv.encode(iconv.decode(data["title"], "cp1251"), "utf8").toString();
+      console.log(data["title"]);
+    }
+    if(!data.includes(undefined))
+    {
+      let currentDate = new Date();
+      let year = currentDate.getFullYear().toString();
+      let month = currentDate.getMonth().toString();
+      let day = currentDate.getDate().toString();
+      let published = year + '-' + month + '-' + day;
+      db.insertNews(data["title"], published, data["contentName"], data["imageFile"]);
+    }
+    console.log('Done');
   });
 }
 
-function downloadFile(fileid, filename, partsOfNews, lastOne, deleteFunction) {
+function downloadFile(fileid, filename, callback) {
   let parts = filename.split('.');
   let path = './data/news_drive/' + fileid + '.' +  parts[1];
   var dest = fs.createWriteStream(path.toString(), {encoding: 'utf8'});
-   global.drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
-  function(err, res){
-    res.data.on('end', () => {
-      let parts = filename.split('.');
-      if(docs.includes(parts[1])){
-        partsOfNews["contentName"] = fileid;
-        console.log('Content recieved');
-        console.log(partsOfNews["contentName"]);
-        console.log('Sent to converter');
-        sendToConverter(fileid + '.' +  parts[1]);
-      }
-      else if(images.includes(parts[1])){
-        partsOfNews["imageFile"] = fileid + '.' +  parts[1];
-        console.log('Photo recieved');
-        console.log(partsOfNews["imageFile"]);
-      }
-      else if(parts[1] == 'txt'){
-        console.log('Title recieved');
-        partsOfNews["title"] = fs.readFileSync('./data/news_drive/' + fileid + '.txt');
-        partsOfNews["title"] = iconv.encode(iconv.decode(partsOfNews["title"], "cp1251"), "utf8").toString();
-        console.log(partsOfNews["title"]);
-      }
-      if(lastOne && !partsOfNews.includes(null))
-      {
-        console.log('So...');
-        
-        console.log(partsOfNews["contentName"]);
-        console.log(partsOfNews["imageFile"]);
-        let currentDate = new Date();
-        let year = currentDate.getFullYear().toString();
-        let month = currentDate.getMonth().toString();
-        let day = currentDate.getDate().toString();
-        let published = year + '-' + month + '-' + day;
-        db.insertNews(partsOfNews["title"], published, partsOfNews["contentName"], partsOfNews["imageFile"]);
-      }
-      console.log('Done');
-    })
-    .on('error', err => {
-      console.log('Error', err);
-    })
-    .on('end', deleteFunction)
-    .pipe(dest);
-  })
+  return new Promise(function(resolve, reject){
+    global.drive.files.get({fileId: fileid, alt: 'media'}, {responseType: 'stream'},
+    function(err, res){
+      res.data.on('end', () => {
+        if(docs.includes(parts[1])){
+          sendToConverter(fileid + '.' +  parts[1]);
+          console.log('Sent to converter');
+        }
+        console.log('done downloadFile');
+        resolve('done downloadFile');
+      })
+      .on('error', err => {
+        console.log('Error', err);
+      })
+      .on('end', callback)
+      .pipe(dest);
+    });
+  });
 }
 
-exports.startSchedule = async function() {
-  var job = schedule.scheduleJob('47 23 * * *', function(){
-    if(global.drive == undefined)
-      await createDrive();
-
-
+exports.startSchedule = function startSchedule(timeString) {
+  var job = schedule.scheduleJob(timeString, async function(){
+    if(global.drive == undefined){
+      readCredentialsAndAuthorize().then(listFiles);
+    }
+    else
+      listFiles()
   });
 }
 
