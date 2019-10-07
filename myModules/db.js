@@ -149,7 +149,7 @@ exports.getManyNews = async function(page, amount)
     rowMode: 'array',
     text: `SELECT *
           FROM News 
-          WHERE id::int >= 
+          WHERE id::int <= 
           ((SELECT value 
           FROM Additional 
           WHERE name like 'NewsRowsCount'

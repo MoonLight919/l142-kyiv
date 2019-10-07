@@ -149,15 +149,15 @@ function listFiles() {
       q: `'${googleDriveCredentials.folders[keys[index]]}' in parents`,
       pageSize: 10,
       fields: 'nextPageToken, files(id, name)',
-    }, (err, res) => {
+    }, async function(err, res){
       if (err) return console.log('The API returned an error: ' + err);
-      const files = res.data.files;
+      let files = res.data.files;
       if (files.length) {
         console.log('Files:');
-        let deleteFunction = deleteFile.bind(null, files[index].id);
         for (let index = 0; index < files.length; index++) {
+          let deleteFunction = deleteFile.bind(null, files[index].id);
           console.log(`${files[index].name} (${files[index].id})`);
-          downloadFile(files[index].id, files[index].name, deleteFunction);
+          await downloadFile(files[index].id, files[index].name, deleteFunction);
         }
         processingFunctions[index](files);
       } else {
@@ -185,17 +185,17 @@ function processNews(files) {
       data["title"] = iconv.encode(iconv.decode(data["title"], "cp1251"), "utf8").toString();
       console.log(data["title"]);
     }
-    if(!data.includes(undefined))
-    {
-      let currentDate = new Date();
-      let year = currentDate.getFullYear().toString();
-      let month = currentDate.getMonth().toString();
-      let day = currentDate.getDate().toString();
-      let published = year + '-' + month + '-' + day;
-      db.insertNews(data["title"], published, data["contentName"], data["imageFile"]);
-    }
-    console.log('Done');
   });
+  if(!data.includes(undefined))
+  {
+    let currentDate = new Date();
+    let year = currentDate.getFullYear().toString();
+    let month = (currentDate.getMonth() + 1).toString();
+    let day = currentDate.getDate().toString();
+    let published = year + '-' + month + '-' + day;
+    db.insertNews(data["title"], published, data["contentName"], data["imageFile"]);
+  }
+  console.log('Done');
 }
 
 function downloadFile(fileid, filename, callback) {
