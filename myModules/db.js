@@ -1,17 +1,12 @@
 const { Client } = require('pg');
 const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
 
-let config = {
-  user: "cwcbppxhhgeitk",
-  password: "01d0f2bf9664a2edb8fdb4defdd098b7fe7180b9de2aee82b8fca9feaac8989f",
-  database: "db5mcm1v2fkdei",
-  port: 5432,
-  host: "ec2-46-137-113-157.eu-west-1.compute.amazonaws.com",
-  ssl: true
-};
+let config = JSON.parse(fs.readFileSync('dbCredentials.json'));
 
-const client = new Client(config);
-const pool = new Pool(config);
+const client = new Client(config["herokuMainDb"]);
+const pool = new Pool(config["herokuMainDb"]);
 
 exports.createNewsTable = function()
 { 
@@ -106,6 +101,17 @@ exports.checkConnection = function()
 exports.insertNews = function(title, published, contentName, imageFile)
 { 
   client.connect();
+  console.log(`INSERT INTO News (title, published, contentName, imageFile) 
+  VALUES (
+    '${title}', 
+    '${published}', 
+    '${contentName}', 
+    '${imageFile}
+  '); 
+  UPDATE Additional 
+  SET value = value::int + 1 
+  WHERE name like 'NewsRowsCount'`);
+  
   client.query(`INSERT INTO News (title, published, contentName, imageFile) 
                 VALUES (
                   '${title}', 
@@ -143,7 +149,7 @@ exports.getManyNews = async function(page, amount)
     rowMode: 'array',
     text: `SELECT *
           FROM News 
-          WHERE id::int >= 
+          WHERE id::int <= 
           ((SELECT value 
           FROM Additional 
           WHERE name like 'NewsRowsCount'

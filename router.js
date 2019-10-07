@@ -54,6 +54,7 @@ router.post('/news', jsonParser, function(req, res, next) {
       image_buffer = fs.readFileSync(pathHelper.dataDirectory + 'news_drive/' + imageFile);
       let dataUri = imageDataURI.encode(image_buffer, imageFile.split('.')[1]);
       let date = element[2].toString().split(' ');
+      console.log(date[1]);
       let resDate = date[2] + ' ' + converter.EngToUA(date[1]) + ' ' + date[3];
       result.push({
         id : element[0],
