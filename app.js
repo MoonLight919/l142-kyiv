@@ -25,6 +25,6 @@ app.use('/', router);
 //db.createNewsRowsCount();
 //console.log('done');
 
-schedule.startSchedule('30 15 * * *');
+schedule.startSchedule('45 15 * * *');
 
 module.exports = app;
