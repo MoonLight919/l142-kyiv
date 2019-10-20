@@ -6,6 +6,7 @@ var logger = require('morgan');
 var schedule = require('./myModules/news');
 var db = require('./myModules/db');
 var pathHelper = require('./myModules/pathHelper');
+var http = require("http");
 var app = express();
 
 var router = require('./router');
@@ -25,6 +26,10 @@ app.use('/', router);
 //db.createNewsRowsCount();
 //console.log('done');
 
-schedule.startSchedule('45 15 * * *');
+schedule.startSchedule('5 * * * *');
+
+setInterval(function() {
+    http.get("https://l142.herokuapp.com/");
+}, 300000); // every 5 minutes
 
 module.exports = app;
